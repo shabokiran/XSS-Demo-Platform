@@ -1,0 +1,39 @@
+<!--<h3>Stored XSS</h3>
+<form method="POST">
+  <input name="comment" placeholder="Type a comment" required>
+  <button>Submit</button>
+</form>
+<ul>
+  {% for comment in comments %}
+    <li>{{ comment|safe }}</li>
+  {% endfor %}
+</ul>
+<a href="/">Back</a>
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stored XSS Demo</title>
+</head>
+<body>
+    <h2>Stored XSS Demo</h2>
+
+    <form method="POST" action="/stored">
+        <label>Leave a comment:</label><br>
+        <textarea name="comment" rows="4" cols="40"></textarea><br><br>
+        <input type="submit" value="Submit Comment">
+    </form>
+
+    <h3>All Comments:</h3>
+    {% for comment in comments %}
+        <!-- Vulnerable: renders raw input -->
+        <p>{{ comment|safe }}</p>
+    {% endfor %}
+
+    <p><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

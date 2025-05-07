@@ -1,0 +1,30 @@
+<!--<h3>Reflected XSS Demo</h3>
+<p><strong>Raw input:</strong> {{ user_input }}</p>
+<p><strong>Sanitized:</strong> {{ sanitized }}</p>
+<a href="/">Back</a>
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflected XSS Demo</title>
+</head>
+<body>
+    <h2>Reflected XSS Demo</h2>
+    <form method="POST">
+        <label for="user_input">Enter some text:</label>
+        <input type="text" name="user_input" id="user_input" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if user_input %}
+        <h3>Reflected Output:</h3>
+        <p>{{ user_input }}</p> <!-- This is where the input will be reflected back -->
+        
+        <h3>Safe (escaped):</h3>
+        <p>{{ user_input|e }}</p> <!-- This will escape special characters to prevent execution -->
+    {% endif %}
+</body>
+</html>

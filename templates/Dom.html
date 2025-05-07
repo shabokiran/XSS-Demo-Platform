@@ -1,0 +1,34 @@
+<!--<h3>DOM-based XSS</h3>
+<input id="input" placeholder="Enter something">
+<button onclick="inject()">Inject</button>
+<div id="output"></div>
+<a href="/">Back</a>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.min.js"></script>
+<script src="/static/dom-xss.js"></script>
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DOM-Based XSS Demo</title>
+</head>
+<body>
+    <h2>DOM-Based XSS Demo</h2>
+    <p>Enter your name:</p>
+    
+    <input type="text" id="nameInput" placeholder="Enter your name">
+    <button onclick="displayName()">Submit</button>
+
+    <p id="output"></p>
+
+    <br>
+    <a href="{{ url_for('index') }}">Back to Dashboard</a> <!-- Redirect to main demo options -->
+
+    <script>
+        function displayName() {
+            const name = document.getElementById("nameInput").value;
+            document.getElementById("output").innerHTML = "Hello, " + name;
+        }
+    </script>
+</body>
+</html>

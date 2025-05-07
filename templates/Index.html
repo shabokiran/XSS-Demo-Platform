@@ -1,0 +1,28 @@
+<!--<h2>XSS & Web Security Demo</h2>
+<ul>
+  <li><a href="/reflected">Reflected XSS</a></li>
+  <li><a href="/stored">Stored XSS</a></li>
+  <li><a href="/dom">DOM-based XSS</a></li>
+  <li><a href="/crypto">Crypto Demo (SHA256)</a></li>
+</ul>
+{% if session.get('user') %}
+<p>Welcome, {{ session.get('user') }}! <a href="/dashboard">Dashboard</a> | <a href="/logout">Logout</a></p>
+{% else %}
+<p><a href="/login">Login</a></p>
+{% endif %}
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XSS Demo Platform</title>
+</head>
+<body>
+    <h1>Welcome to the XSS Attack & Mitigation Demo Platform</h1>
+    <p><a href="/login">Login</a> to begin exploring XSS vulnerabilities and defenses.</p>
+</body>
+</html>
+

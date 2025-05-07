@@ -1,0 +1,31 @@
+
+<!--
+<h3>Instructor Dashboard</h3>
+<ul>
+  <li>Reflected XSS: <a href="/reflected">Try</a></li>
+  <li>Stored XSS: <a href="/stored">Try</a></li>
+  <li>DOM XSS: <a href="/dom">Try</a></li>
+  <li>Crypto Module: <a href="/crypto">Try</a></li>
+</ul>
+<p><a href="/simulate-malware">Malware Simulation</a></p>
+<p><a href="/logout">Logout</a></p>
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - XSS Demo</title>
+</head>
+<body>
+    <h1>Welcome, {{ user }}</h1>
+    <p>Select a vulnerability or module to explore:</p>
+    <ul>
+        <li><a href="/reflected">Reflected XSS Demo</a></li>
+        <li><a href="/stored">Stored XSS Demo</a></li>
+        <li><a href="/dom">DOM-Based XSS Demo</a></li>
+        <li><a href="/crypto">Cryptography Module</a></li>
+        <li><a href="/malware">Malware Simulation</a></li>
+    </ul>
+    <p><a href="/">Logout</a></p>
+</body>
+</html>
