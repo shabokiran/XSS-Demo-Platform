@@ -8,9 +8,30 @@ import json
 import hashlib
 from cryptography.fernet import Fernet
 from datetime import timedelta
+# ... [keep previous imports]
+from flask_wtf.csrf import CSRFProtect
+
+
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
+from flask_bcrypt import Bcrypt
+from flask_wtf.csrf import CSRFProtect
+import os
+import json
+import hashlib
+from cryptography.fernet import Fernet
+from datetime import timedelta
 
 app = Flask(__name__)
+app.jinja_env.autoescape = True  # ← Add this line right after app creation
+
+csrf = CSRFProtect(app)  # Add CSRF protection
 bcrypt = Bcrypt(app)
+# ... [rest of initial code remains same]
+
+#app = Flask(__name__)
+#bcrypt = Bcrypt(app)
+#csrf = CSRFProtect(app)
+
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(minutes=30)
 
@@ -20,6 +41,34 @@ users = {'student': bcrypt.generate_password_hash("password").decode('utf-8'),
 
 key = Fernet.generate_key()
 cipher = Fernet(key)
+
+
+
+@app.after_request
+def set_secure_headers(response):
+    # Allow unsafe-inline temporarily for demo purposes
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'"
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    return response
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if username in users and bcrypt.check_password_hash(users[username], password):
+            session['user'] = username
+            return redirect(url_for('dashboard'))
+        return render_template('login.html', error="Invalid credentials")
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('index'))
+
 
 @app.after_request
 def set_secure_headers(response):
@@ -34,16 +83,7 @@ def set_secure_headers(response):
 def index():
     return render_template('Index.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if username in users and bcrypt.check_password_hash(users[username], password):
-            session['user'] = username
-            return redirect(url_for('dashboard'))
-        return "Login Failed"
-    return render_template('login.html')
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -57,7 +97,6 @@ def reflected():
     if request.method == 'POST':
         user_input = request.form.get('user_input')
     return render_template('reflected.html', user_input=user_input)
-
 
 
 
