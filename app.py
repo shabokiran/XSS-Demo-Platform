@@ -8,7 +8,7 @@ import json
 import hashlib
 from cryptography.fernet import Fernet
 from datetime import timedelta
-# ... [keep previous imports]
+from markupsafe import escape  # Add this import
 from flask_wtf.csrf import CSRFProtect
 
 
@@ -21,17 +21,32 @@ import hashlib
 from cryptography.fernet import Fernet
 from datetime import timedelta
 
+from flask import Flask, render_template, request
+from markupsafe import escape, Markup  # Explicit escaping
+from flask_wtf.csrf import CSRFProtect
+import secrets
+
+
+
 app = Flask(__name__)
-app.jinja_env.autoescape = True  # ← Add this line right after app creation
+app.config['SECRET_KEY'] = secrets.token_hex(32)  # 64-character random key
+csrf = CSRFProtect(app)
 
-csrf = CSRFProtect(app)  # Add CSRF protection
+# ▼▼▼ Force escaping through context processor ▼▼▼
+@app.context_processor
+def inject_escape():
+    return dict(escape=escape)
+
+@app.route('/reflected', methods=['GET', 'POST'])
+def reflected():
+    raw_input = request.form.get('user_input', '') if request.method == 'POST' else ''
+    return render_template(
+        'reflected.html',
+        vulnerable_output=Markup(raw_input),  # Explicitly mark as safe
+        mitigated_output=escape(raw_input)    # Explicitly escape
+    )
+
 bcrypt = Bcrypt(app)
-# ... [rest of initial code remains same]
-
-#app = Flask(__name__)
-#bcrypt = Bcrypt(app)
-#csrf = CSRFProtect(app)
-
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(minutes=30)
 
@@ -91,15 +106,7 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('dashboard.html', user=session['user'])
 
-@app.route('/reflected', methods=['GET', 'POST'])
-def reflected():
-    user_input = None
-    if request.method == 'POST':
-        user_input = request.form.get('user_input')
-    return render_template('reflected.html', user_input=user_input)
-
-
-
+"""
 @app.route('/stored', methods=['GET', 'POST'])
 def stored():
     if request.method == 'POST':
@@ -111,10 +118,33 @@ def stored():
         with open('comments.txt', 'r', encoding='utf-8') as f:
             comments = f.readlines()
     return render_template('stored.html', comments=comments)
+"""
+
+from markupsafe import Markup  # Add to imports
+
+@app.route('/stored', methods=['GET', 'POST'])
+def stored():
+    if request.method == 'POST':
+        comment = request.form['comment']
+        with open('comments.txt', 'a', encoding='utf-8') as f:
+            f.write(comment + "\n")
+    
+    comments = []
+    if os.path.exists('comments.txt'):
+        with open('comments.txt', 'r', encoding='utf-8') as f:
+            # Mark existing comments as safe for demo purposes
+            comments = [Markup(line.strip()) for line in f.readlines()]
+    
+    return render_template('stored.html', comments=comments)
+
+
 
 @app.route('/dom')
 def dom():
-    return render_template('Dom.html')
+    # Temporarily disable CSP header for debugging
+    response = make_response(render_template('Dom.html'))
+    return response
+
 
 @app.route('/crypto', methods=['GET', 'POST'])
 def crypto():
@@ -129,6 +159,9 @@ def crypto():
 @app.route('/malware')
 def malware():
     return render_template('malware.html')
+
+
+
 
 
 if __name__ == '__main__':

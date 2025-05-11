@@ -3,4 +3,5 @@ this is my commrt
 this is restoring the previous comments also , wow, it means its working properly
 this is to check the stored xss functionality.
 comment saved in session
+<script>alert()</script>
 

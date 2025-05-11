@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +9,7 @@
 <body>
     <h2>Reflected XSS Demo</h2>
     <form method="POST">
-        <!-- Add CSRF Token Here -->
+        
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label for="user_input">Enter some text:</label>
         <input type="text" name="user_input" id="user_input" required>
@@ -17,18 +18,57 @@
 
     {% if user_input %}
         <h3>Vulnerable Output (Raw HTML):</h3>
-        <div class="vulnerable">
-            {{ user_input|safe }}  <!-- Unsafe rendering -->
-        </div>
-        
-
+<div class="vulnerable">
+    {{ user_input|safe }}  
+</div>
 
         <h3>Mitigated Output (Escaped):</h3>
-        <div class="safe">
-            {{ user_input|e }}  <!-- Auto-escaped by Flask -->
-        </div>
+       
+<div class="safe">
+    {{ escaped_input }}  
+</div>
+
     {% endif %}
-    
+
     <p><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>
+
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reflected XSS Demo</title>
+    <style>
+        .vulnerable { background: #ffdddd; padding: 10px; margin: 10px 0; }
+        .safe { background: #ddffdd; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h2>Reflected XSS Demo</h2>
+    
+    <!-- Form with PROPER CSRF token placement -->
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="text" name="user_input" placeholder="Try <script>alert(1)</script>" required>
+        <button type="submit">Test XSS</button>
+    </form>
+
+    <!-- Results Section -->
+    {% if vulnerable_output is defined %}
+        <h3>Vulnerable Output (Raw HTML)</h3>
+        <div class="vulnerable">
+            {{ vulnerable_output }}
+        </div>
+        
+        <h3>Mitigated Output (Escaped)</h3>
+        <div class="safe">
+            {{ mitigated_output }}
+        </div>
+        
+        <h4>HTML Source Comparison</h4>
+        <p><strong>Vulnerable:</strong> <code>{{ vulnerable_output }}</code></p>
+        <p><strong>Mitigated:</strong> <code>{{ mitigated_output }}</code></p>
+    {% endif %}
 </body>
 </html>

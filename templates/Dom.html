@@ -1,29 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>DOM-Based XSS Demo</title>
+  <meta charset="UTF-8">
+  <title>DOM-Based XSS Demo</title>
+  <script src="{{ url_for('static', filename='dom-xss.js') }}"></script>
 </head>
 <body>
-    <h2>DOM-Based XSS Demo</h2>
-    <p>Enter your name:</p>
-    
-    <input type="text" id="nameInput" placeholder="Enter your name">
-    <button onclick="displayName()">Submit</button>
-
-    <p id="output"></p>
-
-    <br>
-    <a href="{{ url_for('index') }}">Back to Dashboard</a> <!-- Redirect to main demo options -->
-
-    <script>
-        function displayName() {
-            const name = document.getElementById("nameInput").value;
-            document.getElementById("output").innerHTML = "Hello, " + name;
-        }
-    </script>
-
-
+  <h2>DOM-Based XSS Demo</h2>
+  <p>Try this URL: <code>?name=&lt;script&gt;alert('XSS')&lt;/script&gt;</code></p>
+  <p id="output"></p>
+  <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
 </body>
 </html>
